@@ -1,17 +1,32 @@
 import Levenshtein as lev
+import re
+import unidecode
 
 
 def main():
+    pattern = re.compile('[[:alnum]]*')
+
     feuil1 = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\Lev_DENOM_D_FEUIL1_vs_SAP.txt",
                   encoding="utf8")
     zmmartstam = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\zmmartstam.txt", encoding="utf8")
+
+    #feuil1 = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\eosin.txt",
+    #              encoding="utf8")
+    #zmmartstam = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\zmmartstam_eosine.txt",
+    #                  encoding="utf8")
+
     lines_zmmartstam = zmmartstam.readlines()
     zmmartstam.close()
 
     result = open(
-        "C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\output\\result_feuil1_D_vs_zmmartstam_sap.csv",
-        "w",
-        encoding="utf8")
+       "C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\output\\result_feuil1_D_vs_zmmartstam_sap.csv",
+       "w",
+       encoding="utf8")
+
+    #result = open(
+    #    "C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\output\\result_test.csv",
+    #    "w",
+    #    encoding="utf8")
 
     for line_feuil1 in feuil1:
 
@@ -26,16 +41,26 @@ def main():
         if len(line_feuil1) < 3:
             id_prod = line_feuil1[0]
             labo = line_feuil1[1]
-            result.write("{0}\t{1}\t\t\t\t100,00\n".format(id_prod, labo))
+            result.write("{0}\t{1}\t\t\t\t1,00\n".format(id_prod, labo))
             continue
+
+        line_feuil1_tmp = line_feuil1[2].upper()
+        line_feuil1_tmp = unidecode.unidecode(line_feuil1_tmp)
+        line_feuil1_tmp = re.sub('[^0-9A-Z]+', '', line_feuil1_tmp)
 
         for line_zmmartstam in lines_zmmartstam:
             line_zmmartstam = line_zmmartstam.strip()
             line_zmmartstam = line_zmmartstam.split("\t")
 
-            dist = lev.distance(line_feuil1[2].lower(), line_zmmartstam[1].lower())
-            dist = dist / len(line_feuil1[2])
+            line_zmmartstam_tmp = re.sub('[^0-9A-Z]+', '', line_zmmartstam[1].upper())
+            line_zmmartstam_tmp = unidecode.unidecode(line_zmmartstam_tmp)
+            # print(line_zmmartstam_tmp)
+            # print(line_feuil1_tmp)
+            dist = lev.distance(line_feuil1_tmp, line_zmmartstam_tmp)
+            divide = len(line_feuil1_tmp)
+            dist = dist / divide
             dists.append(dist)
+
             lines_zmmartstam_denom.append(line_zmmartstam[1])
             lines_zmmartstam_matnr.append(line_zmmartstam[0])
 
