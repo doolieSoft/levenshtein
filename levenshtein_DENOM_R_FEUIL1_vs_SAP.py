@@ -9,26 +9,28 @@ def main():
     feuil1 = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\Lev_DENOM_D_FEUIL1_vs_SAP.txt",
                   encoding="utf8")
     zmmartstam = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\zmmartstam.txt", encoding="utf8")
-
-    #feuil1 = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\eosin.txt",
-    #              encoding="utf8")
-    #zmmartstam = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\zmmartstam_eosine.txt",
-    #                  encoding="utf8")
-
-    lines_zmmartstam = zmmartstam.readlines()
-    zmmartstam.close()
-
     result = open(
-        "C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\output\\result_feuil1_R_vs_zmmartstam_sap.csv",
+        "C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\output\\result_feuil1_D_vs_zmmartstam_sap.csv",
         "w",
         encoding="utf8")
 
-    #result = open(
-    #    "C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\output\\result_test.csv",
-    #    "w",
-    #    encoding="utf8")
+    # feuil1 = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\eosin.txt",
+    #             encoding="utf8")
+    # zmmartstam = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\zmmartstam_eosine.txt",
+    #                 encoding="utf8")
+    # result = open(
+    #  "C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\output\\result_test.csv",
+    #  "w",
+    #  encoding="utf8")
+    lines_zmmartstam = zmmartstam.readlines()
+    zmmartstam.close()
 
+    i = 0
+    lines_result = []
     for line_feuil1 in feuil1:
+        if i % 100 == 0:
+            print(i)
+        i += 1
 
         line_feuil1 = line_feuil1.strip()
         line_feuil1 = line_feuil1.split("\t")
@@ -41,7 +43,7 @@ def main():
         if len(line_feuil1) < 3:
             id_prod = line_feuil1[0]
             labo = line_feuil1[1]
-            result.write("{0}\t{1}\t\t\t\t1,00\n".format(id_prod, labo))
+            lines_result.append("{0}\t{1}\t\t\t\t1,00\n".format(id_prod, labo))
             continue
 
         line_feuil1_tmp = line_feuil1[2].upper()
@@ -68,9 +70,11 @@ def main():
             ind_min = dists.index(min(dists))
             levenshtein_val = "{0:0.2f}".format(dists[ind_min])
             levenshtein_val = levenshtein_val.replace(".", ",")
-            result.write("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(line_feuil1[0], line_feuil1[1], line_feuil1[2],
-                                                                 lines_zmmartstam_matnr[ind_min],
-                                                                 lines_zmmartstam_denom[ind_min], levenshtein_val))
+            lines_result.append("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(line_feuil1[0], line_feuil1[1], line_feuil1[2],
+                                                                        lines_zmmartstam_matnr[ind_min],
+                                                                        lines_zmmartstam_denom[ind_min],
+                                                                        levenshtein_val))
+    result.write(''.join(lines_result))
     result.close()
 
 
