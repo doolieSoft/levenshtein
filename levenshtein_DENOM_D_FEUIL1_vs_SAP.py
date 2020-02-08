@@ -1,5 +1,6 @@
-import Levenshtein as lev
 import re
+
+import Levenshtein as lev
 import unidecode
 
 
@@ -25,6 +26,23 @@ def main():
     lines_zmmartstam = zmmartstam.readlines()
     zmmartstam.close()
 
+    lines_zmmartstam_without_accents = []
+    lines_zmmartstam_denom = []
+    lines_zmmartstam_matnr = []
+
+    for line_zmmartstam in lines_zmmartstam:
+        line_zmmartstam = line_zmmartstam.strip()
+        line_zmmartstam = line_zmmartstam.split("\t")
+
+        line_zmmartstam_tmp = line_zmmartstam[1].upper()
+        line_zmmartstam_tmp = unidecode.unidecode(line_zmmartstam_tmp)
+        line_zmmartstam_tmp = re.sub('[^0-9A-Z]*', '', line_zmmartstam_tmp)
+
+        lines_zmmartstam_without_accents.append(line_zmmartstam_tmp)
+
+        lines_zmmartstam_denom.append(line_zmmartstam[1])
+        lines_zmmartstam_matnr.append(line_zmmartstam[0])
+
     i = 0
     lines_result = []
     for line_feuil1 in feuil1:
@@ -37,9 +55,6 @@ def main():
 
         dists = []
 
-        lines_zmmartstam_denom = []
-        lines_zmmartstam_matnr = []
-
         if len(line_feuil1) < 3:
             id_prod = line_feuil1[0]
             labo = line_feuil1[1]
@@ -48,23 +63,13 @@ def main():
 
         line_feuil1_tmp = line_feuil1[2].upper()
         line_feuil1_tmp = unidecode.unidecode(line_feuil1_tmp)
-        line_feuil1_tmp = re.sub('[^0-9A-Z]+', '', line_feuil1_tmp)
+        line_feuil1_tmp = re.sub('[^0-9A-Z]*', '', line_feuil1_tmp)
 
-        for line_zmmartstam in lines_zmmartstam:
-            line_zmmartstam = line_zmmartstam.strip()
-            line_zmmartstam = line_zmmartstam.split("\t")
-
-            line_zmmartstam_tmp = re.sub('[^0-9A-Z]+', '', line_zmmartstam[1].upper())
-            line_zmmartstam_tmp = unidecode.unidecode(line_zmmartstam_tmp)
-            # print(line_zmmartstam_tmp)
-            # print(line_feuil1_tmp)
+        for line_zmmartstam_tmp in lines_zmmartstam_without_accents:
             dist = lev.distance(line_feuil1_tmp, line_zmmartstam_tmp)
             divide = len(line_feuil1_tmp)
             dist = dist / divide
             dists.append(dist)
-
-            lines_zmmartstam_denom.append(line_zmmartstam[1])
-            lines_zmmartstam_matnr.append(line_zmmartstam[0])
 
         if len(dists) > 0:
             ind_min = dists.index(min(dists))
