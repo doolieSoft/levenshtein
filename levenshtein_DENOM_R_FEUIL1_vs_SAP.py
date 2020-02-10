@@ -5,7 +5,8 @@ import unidecode
 
 
 def main():
-    pattern = re.compile('[[:alnum]]*')
+    #pattern = re.compile('[[:alnum]]*')
+    pattern = re.compile('[^0-9A-Z]*')
 
     feuil1 = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\Lev_DENOM_R_FEUIL1_vs_SAP.txt",
                  encoding="utf8")
@@ -37,7 +38,7 @@ def main():
 
         line_zmmartstam_tmp = line_zmmartstam[1].upper()
         line_zmmartstam_tmp = unidecode.unidecode(line_zmmartstam_tmp)
-        line_zmmartstam_tmp = re.sub('[^0-9A-Z]*', '', line_zmmartstam_tmp)
+        line_zmmartstam_tmp = re.sub(pattern, '', line_zmmartstam_tmp)
 
         lines_zmmartstam_without_accents.append(line_zmmartstam_tmp)
 
@@ -64,7 +65,7 @@ def main():
 
         line_feuil1_tmp = line_feuil1[2].upper()
         line_feuil1_tmp = unidecode.unidecode(line_feuil1_tmp)
-        line_feuil1_tmp = re.sub('[^0-9A-Z]*', '', line_feuil1_tmp)
+        line_feuil1_tmp = re.sub(pattern, '', line_feuil1_tmp)
 
         for line_zmmartstam_tmp in lines_zmmartstam_without_accents:
             dist = lev.distance(line_feuil1_tmp, line_zmmartstam_tmp)
