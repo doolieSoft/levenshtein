@@ -1,37 +1,44 @@
+import argparse
 import re
 
 import Levenshtein as lev
 import unidecode
 
+args = None
+
+
+def getArguments():
+    global args
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--fullpath_denomination_labo",
+                        help="chemin complet du fichier de dénomination des articles de labos", type=str)
+    parser.add_argument("--fullpath_denomination_sap",
+                        help="chemin complet du fichier de dénomination des articles dans sap", type=str)
+    parser.add_argument("--fullpath_output",
+                        help="chemin complet du fichier de sortie donnant la distance de levenshtein pour chaque ligne d'article de labo",
+                        type=str)
+
+    args = parser.parse_args()
+
+    print("--fullpath_denomination_labo :" + args.fullpath_denomination_labo)
+    print("--fullpath_denomination_sap :" + args.fullpath_denomination_sap)
+    print("--fullpath_output :" + args.fullpath_output)
+
 
 def main():
-    pattern = re.compile('[[:alnum]]*')
+    f_denomination_labo = open(args.fullpath_denomination_labo, encoding="utf8")
+    f_denomination_sap = open(args.fullpath_denomination_sap, encoding="utf8")
+    f_result = open(args.fullpath_output, "w", encoding="utf8")
 
-    feuil1 = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\Lev_DENOM_R_FEUIL1_vs_SAP.txt",
-                 encoding="utf8")
-    zmmartstam = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\zmmartstam.txt", encoding="utf8")
-    result = open(
-       "C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\output\\result_feuil1_R_vs_zmmartstam_sap.csv",
-       "w",
-       encoding="utf8")
-
-    #feuil1 = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\test_feuil1.txt",
-    #              encoding="utf8")
-    #zmmartstam = open("C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\input\\test_zmmartstam.txt",
-    #                  encoding="utf8")
-    #result = open(
-    #    "C:\\Users\\c158492\\ProjetBoulot\\PYTHON\\levenshtein\\output\\result_test.csv",
-    #    "w",
-    #    encoding="utf8")
-
-    lines_zmmartstam = zmmartstam.readlines()
-    zmmartstam.close()
+    lines_denomination_sap_zmmartstam = f_denomination_sap.readlines()
+    f_denomination_sap.close()
 
     lines_zmmartstam_without_accents = []
     lines_zmmartstam_denom = []
     lines_zmmartstam_matnr = []
 
-    for line_zmmartstam in lines_zmmartstam:
+    for line_zmmartstam in lines_denomination_sap_zmmartstam:
         line_zmmartstam = line_zmmartstam.strip()
         line_zmmartstam = line_zmmartstam.split("\t")
 
@@ -46,7 +53,7 @@ def main():
 
     i = 0
     lines_result = []
-    for line_feuil1 in feuil1:
+    for line_feuil1 in f_denomination_labo:
         if i % 100 == 0:
             print(i)
         i += 1
@@ -80,9 +87,10 @@ def main():
                                                                         lines_zmmartstam_matnr[ind_min],
                                                                         lines_zmmartstam_denom[ind_min],
                                                                         levenshtein_val))
-    result.write(''.join(lines_result))
-    result.close()
+    f_result.write(''.join(lines_result))
+    f_result.close()
 
 
 if __name__ == "__main__":
+    getArguments()
     main()
